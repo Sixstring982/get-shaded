@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">get-shaded</string>
+    <string name="destinationLabelText">Where are you walking to?</string>
+    <string name="startButtonText">Go!</string>
+    <string name="destinationEditHint">Destination</string>
+    <string name="appDisplayName">Get Shaded</string>
+</resources>

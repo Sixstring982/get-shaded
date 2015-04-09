@@ -1,0 +1,5 @@
+# Intellij crap
+.idea/
+out/
+bin/
+get-shaded.iml

@@ -24,7 +24,8 @@
         android:text="@string/startButtonText"
         android:id="@+id/button"
         android:layout_below="@+id/editText"
-        android:layout_alignParentLeft="true" />
+        android:layout_alignParentStart="true"
+        android:onClick="pushMapActivity"/>
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

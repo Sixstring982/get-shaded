@@ -1,8 +1,7 @@
 # Intellij crap
-.idea/
+.idea/workspace.xml
 out/
 bin/
-get-shaded.iml
 
 # Google API key. Get your own.
 res/values/keys.xml

@@ -22,8 +22,8 @@ import java.util.Random;
 public class LightGrid {
     public final double[][] lightData;
 
-    private static int X_CELLS = 20;
-    private static int Y_CELLS = 20;
+    private static int X_CELLS = 50;
+    private static int Y_CELLS = 50;
 
     private final double height;
     private final double width;
@@ -76,11 +76,11 @@ public class LightGrid {
                 pops.add(new LatLng(bounds.northeast.latitude - y * dy,
                                     bounds.northeast.longitude - x * dx));
                 pops.add(new LatLng(bounds.northeast.latitude - (y + 1) * dy,
-                        bounds.northeast.longitude - x * dx));
+                                    bounds.northeast.longitude - x * dx));
                 pops.add(new LatLng(bounds.northeast.latitude - (y + 1) * dy,
-                        bounds.northeast.longitude - (x + 1) * dx));
+                                    bounds.northeast.longitude - (x + 1) * dx));
                 pops.add(new LatLng(bounds.northeast.latitude - y * dy,
-                        bounds.northeast.longitude - (x + 1) * dx));
+                                    bounds.northeast.longitude - (x + 1) * dx));
 
                 pops.strokeWidth(1f);
                 pops.strokeColor(0x7f7f7f7f);
@@ -136,17 +136,15 @@ public class LightGrid {
             for (int y = 0; y < lightData[x].length; y++) {
                 double total = 0.0;
                 int count = 0;
+
+                LatLng c1 = new LatLng(
+                        bounds.northeast.latitude - y * dy,
+                        bounds.northeast.longitude - x * dx);
+                LatLng c3 = new LatLng(
+                        bounds.northeast.latitude - (y + 1) * dy,
+                        bounds.northeast.longitude - (x + 1) * dx);
+
                 for (Record record : records) {
-                    double xx = minLng - dx * x;
-                    double yy = minLat - dy * y;
-
-                    LatLng c1 = new LatLng(
-                            bounds.northeast.latitude - y * dy,
-                            bounds.northeast.longitude - x * dx);
-                    LatLng c3 = new LatLng(
-                            bounds.northeast.latitude - (y + 1) * dy,
-                            bounds.northeast.longitude - (x + 1) * dx);
-
                     if (c1.latitude > record.latitude &&
                         c3.latitude < record.latitude &&
                         c1.longitude > record.longitude &&
@@ -179,20 +177,5 @@ public class LightGrid {
             Log.wtf(e.getClass().getName(), e.getMessage());
             return new ArrayList<Record>();
         }
-    }
-
-    private double calculateAverageLight(List<Record> records) {
-        double ans;
-        if (records.size() == 0) {
-            ans = 0;
-        } else {
-            double total = 0.0;
-            for (Record r : records) {
-                total += r.light;
-            }
-
-            ans = total / records.size();
-        }
-        return ans;
     }
 }

@@ -2,6 +2,7 @@ package com.lunagameserve.get_shaded.directions;
 
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.maps.android.PolyUtil;
 import com.lunagameserve.get_shaded.io.IOUtil;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -21,7 +22,7 @@ public class Directions {
 
     public final LatLngBounds bounds;
 
-    public final String[] polylines;
+    public final List<LatLng> polyline;
 
     public Directions(LatLng origin, LatLng destination)
             throws IOException, JSONException {
@@ -34,7 +35,7 @@ public class Directions {
         dirObj = new JSONObject(IOUtil.webRequestContents(request));
 
         bounds = generateBounds();
-        polylines = generatePolylines();
+        polyline = generatePolylines();
     }
 
     public Directions(String origin, LatLng destination)
@@ -47,8 +48,25 @@ public class Directions {
         this(latLngString(origin), destination);
     }
 
-    private String[] generatePolylines() throws JSONException {
-        return null; //TODO Fill this out
+    private List<LatLng> generatePolylines() throws JSONException {
+        List<LatLng> pathPts = new ArrayList<LatLng>();
+
+        JSONArray routes = dirObj.getJSONArray("routes");
+        for (int i = 0; i < routes.length(); i++) {
+            JSONArray legs = routes.getJSONObject(i).getJSONArray("legs");
+            for (int j = 0; j < legs.length(); j++) {
+                JSONArray steps = legs.getJSONObject(j).getJSONArray("steps");
+                for (int k = 0; k < steps.length(); k++) {
+                    JSONObject polyline = steps.getJSONObject(k)
+                            .getJSONObject("polyline");
+
+                    pathPts.addAll(PolyUtil.decode(
+                            polyline.getString("points")));
+                }
+            }
+        }
+
+        return pathPts;
     }
 
     private LatLngBounds generateBounds() throws JSONException {

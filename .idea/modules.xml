@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/get-shaded.iml" filepath="$PROJECT_DIR$/get-shaded.iml" />
       <module fileurl="file://$PROJECT_DIR$/../google-play-services_lib/google-play-services_lib.iml" filepath="$PROJECT_DIR$/../google-play-services_lib/google-play-services_lib.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../android-maps-utils/library/library.iml" filepath="$PROJECT_DIR$/../android-maps-utils/library/library.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../android-maps-utils/library/tests/tests.iml" filepath="$PROJECT_DIR$/../android-maps-utils/library/tests/tests.iml" />
     </modules>
   </component>
 </project>

@@ -1,13 +1,16 @@
 package com.lunagameserve.get_shaded;
 
 import android.app.Activity;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.lunagameserve.get_shaded.directions.Directions;
+import com.lunagameserve.get_shaded.light.LightGrid;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -55,6 +58,17 @@ public class MapActivity extends Activity {
                     googleMap.animateCamera(
                             CameraUpdateFactory.newLatLngBounds(
                                     directions.bounds, 32));
+
+                    PolylineOptions pops = new PolylineOptions();
+                    pops.addAll(directions.polyline);
+                    pops.color(Color.RED);
+
+                    googleMap.addPolyline(pops);
+
+                    googleMap.setMyLocationEnabled(true);
+
+                    LightGrid grid = new LightGrid(directions.bounds);
+                    grid.render(googleMap);
                 } catch (ExecutionException e) {
                     Log.e("ExecutionException", e.getMessage());
                 } catch (InterruptedException e) {

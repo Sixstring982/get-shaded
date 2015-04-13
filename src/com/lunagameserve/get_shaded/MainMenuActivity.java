@@ -10,10 +10,10 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
 import com.google.android.gms.maps.model.LatLng;
-import com.lunagameserve.get_shaded.directions.Directions;
 import org.json.JSONException;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 public class MainMenuActivity extends Activity {
 
@@ -35,14 +35,15 @@ public class MainMenuActivity extends Activity {
                 LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
-    public void pushMapActivity(View view) throws IOException, JSONException {
-        EditText et = (EditText)findViewById(R.id.editText);
-        Directions directions =
-                new Directions(currentLocation, et.getText().toString());
-
-        System.out.println(directions.dirObj);
+    public void pushMapActivity(View view)
+            throws IOException, JSONException,
+                   ExecutionException, InterruptedException {
+        final EditText et = (EditText)findViewById(R.id.editText);
 
         Intent intent = new Intent(this, MapActivity.class);
+        intent.putExtra("latitude", currentLocation.latitude);
+        intent.putExtra("longitude", currentLocation.longitude);
+        intent.putExtra("destination", et.getText().toString());
         startActivity(intent);
     }
 

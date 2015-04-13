@@ -2,6 +2,7 @@
 .idea/workspace.xml
 out/
 bin/
+lib/
 
 # Google API key. Get your own.
 res/values/keys.xml

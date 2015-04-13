@@ -6,12 +6,7 @@
         android:orientation="vertical">
     <fragment
         android:id="@+id/map"
-        android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
         android:name="com.google.android.gms.maps.MapFragment"/>
-
-    <SeekBar
-            android:id="@+id/zoomSlider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
 </LinearLayout>

@@ -18,16 +18,16 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="google-play-services_lib" />
+    <orderEntry type="library" name="org.json:json:20141113" level="project" />
+    <orderEntry type="module" module-name="library" />
     <orderEntry type="module-library">
       <library>
         <CLASSES>
-          <root url="jar://$MODULE_DIR$/../google-play-services_lib/libs/google-play-services.jar!/" />
+          <root url="jar://$USER_HOME$/Documents/Java/android/google-play-services_lib/libs/google-play-services.jar!/" />
         </CLASSES>
         <JAVADOC />
         <SOURCES />
       </library>
     </orderEntry>
-    <orderEntry type="library" name="org.json:json:20141113" level="project" />
-    <orderEntry type="module" module-name="library" />
   </component>
 </module>

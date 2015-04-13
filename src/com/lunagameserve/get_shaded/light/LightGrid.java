@@ -2,6 +2,7 @@ package com.lunagameserve.get_shaded.light;
 
 import android.util.Log;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolygonOptions;
@@ -21,8 +22,8 @@ import java.util.Random;
 public class LightGrid {
     public final double[][] lightData;
 
-    private static int X_CELLS = 10;
-    private static int Y_CELLS = 10;
+    private static int X_CELLS = 20;
+    private static int Y_CELLS = 20;
 
     private final double height;
     private final double width;
@@ -38,6 +39,8 @@ public class LightGrid {
     private final double maxLat;
     private final double minLng;
     private final double maxLng;
+
+    private final List<Record> records;
 
     public LightGrid(LatLngBounds bounds) {
         this.bounds = bounds;
@@ -59,15 +62,12 @@ public class LightGrid {
         dx = width / X_CELLS;
         dy = height / Y_CELLS;
 
-        List<Record> records = readRecords();
-        double averageLight = calculateAverageLight(records);
-        lightData = generateLightData(records, averageLight);
+        records = readRecords();
+        lightData = generateLightData(records);
 
         minBin = findMinValue(lightData);
         maxBin = findMaxValue(lightData);
     }
-
-    private Random rand = new Random();
 
     public void render(GoogleMap map) {
         for (int x = 0; x < lightData.length; x++) {
@@ -82,16 +82,26 @@ public class LightGrid {
                 pops.add(new LatLng(bounds.northeast.latitude - y * dy,
                         bounds.northeast.longitude - (x + 1) * dx));
 
+                pops.strokeWidth(1f);
+                pops.strokeColor(0x7f7f7f7f);
+
                 if (lightData[x][y] > 0) {
                     pops.fillColor(ColorMap.redBlueGradient(
                             minBin, lightData[x][y], maxBin
                     ));
-                } else {
-                    pops.fillColor(0);
+                    map.addPolygon(pops);
                 }
-
-                map.addPolygon(pops);
             }
+        }
+
+        for (Record r : records) {
+            CircleOptions cops = new CircleOptions();
+            cops.center(new LatLng(r.latitude, r.longitude));
+            cops.radius(1);
+            cops.fillColor(ColorMap.redBlueGradient(minBin, r.light, maxBin));
+            cops.strokeWidth(1f);
+            cops.strokeColor(0x7f7f7f7f);
+            map.addCircle(cops);
         }
     }
 
@@ -119,7 +129,7 @@ public class LightGrid {
         return max;
     }
 
-    private double[][] generateLightData(List<Record> records, double avg) {
+    private double[][] generateLightData(List<Record> records) {
         double[][] lightData = new double[X_CELLS][];
         for (int x = 0; x < lightData.length; x++) {
             lightData[x] = new double[Y_CELLS];
@@ -127,13 +137,20 @@ public class LightGrid {
                 double total = 0.0;
                 int count = 0;
                 for (Record record : records) {
-                    double xx = dx * x + width + minLng;
-                    double yy = dy * y + height + minLat;
+                    double xx = minLng - dx * x;
+                    double yy = minLat - dy * y;
 
-                    if (xx < record.longitude &&
-                        xx + width > record.longitude &&
-                        yy < record.latitude &&
-                        yy + height > record.latitude) {
+                    LatLng c1 = new LatLng(
+                            bounds.northeast.latitude - y * dy,
+                            bounds.northeast.longitude - x * dx);
+                    LatLng c3 = new LatLng(
+                            bounds.northeast.latitude - (y + 1) * dy,
+                            bounds.northeast.longitude - (x + 1) * dx);
+
+                    if (c1.latitude > record.latitude &&
+                        c3.latitude < record.latitude &&
+                        c1.longitude > record.longitude &&
+                        c3.longitude < record.longitude) {
                         total += record.light;
                         count++;
                     }

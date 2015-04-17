@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainMenuActivity extends Activity {
 
-    private int calibrationPointsLeft = 5;
+    private int calibrationPointsLeft = 1;
     private LatLng currentLocation;
     private LocationManager locationManager;
 

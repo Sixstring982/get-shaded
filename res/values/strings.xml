@@ -5,4 +5,5 @@
     <string name="startButtonText">Calibrating…</string>
     <string name="destinationEditHint">Destination</string>
     <string name="appDisplayName">Get Shaded</string>
+    <string name="crunchDefaultText">Downloading Directions</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.lunagameserve.get_shaded.directions;
 
+import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.PolyUtil;
@@ -52,6 +53,7 @@ public class Directions {
         List<LatLng> pathPts = new ArrayList<LatLng>();
 
         JSONArray routes = dirObj.getJSONArray("routes");
+        Log.d("Directions", "Found " + routes.length() + " routes.");
         for (int i = 0; i < routes.length(); i++) {
             JSONArray legs = routes.getJSONObject(i).getJSONArray("legs");
             for (int j = 0; j < legs.length(); j++) {
@@ -71,7 +73,7 @@ public class Directions {
 
     private LatLngBounds generateBounds() throws JSONException {
         List<Double> lats = new ArrayList<Double>();
-        List<Double> lons = new ArrayList<Double>();
+        List<Double> lngs = new ArrayList<Double>();
 
         JSONArray routes = dirObj.getJSONArray("routes");
         for (int i = 0; i < routes.length(); i++) {
@@ -79,16 +81,16 @@ public class Directions {
 
             JSONObject ne = bounds.getJSONObject("northeast");
             lats.add(ne.getDouble("lat"));
-            lons.add(ne.getDouble("lng"));
+            lngs.add(ne.getDouble("lng"));
 
             JSONObject sw = bounds.getJSONObject("southwest");
             lats.add(sw.getDouble("lat"));
-            lons.add(sw.getDouble("lng"));
+            lngs.add(sw.getDouble("lng"));
         }
 
-        double minLon = lons.get(0);
-        double maxLon = lons.get(0);
-        for (double d : lons) {
+        double minLon = lngs.get(0);
+        double maxLon = lngs.get(0);
+        for (double d : lngs) {
             if (Math.max(maxLon, d) == d) {
                 maxLon = d;
             }

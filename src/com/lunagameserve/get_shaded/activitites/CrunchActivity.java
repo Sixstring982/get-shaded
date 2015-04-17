@@ -6,12 +6,14 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.lunagameserve.get_shaded.R;
 import com.lunagameserve.get_shaded.directions.Directions;
 import com.lunagameserve.get_shaded.light.LightGrid;
 import com.lunagameserve.get_shaded.light.LightLine;
+import com.lunagameserve.get_shaded.util.StringUtil;
 
 /**
  * @author Sixstring982
@@ -50,6 +52,9 @@ public class CrunchActivity extends Activity {
     }
 
     private void pushMapActivity(LatLngBounds bounds, LightLine lightLine) {
+        /* If more than one route was found, let's push a route
+        *  selection activity.*/
+
         Intent intent = new Intent(this, MapActivity.class);
         intent.putExtra("nelat", bounds.northeast.latitude);
         intent.putExtra("nelng", bounds.northeast.longitude);
@@ -57,6 +62,8 @@ public class CrunchActivity extends Activity {
         intent.putExtra("swlng", bounds.southwest.longitude);
         intent.putExtra("lightLine", lightLine);
         startActivity(intent);
+
+        finish();
     }
 
     private void asyncGetDirections() {
@@ -89,7 +96,22 @@ public class CrunchActivity extends Activity {
 
             @Override
             protected void onPostExecute(Directions directions) {
-                asyncGenerateLightMap(directions);
+                if (directions.isDirectionsFound()) {
+                    Toast.makeText(
+                            getBaseContext(),
+                            StringUtil.pluralize("route",
+                                    directions.polylines.size()) +
+                            " found.",
+                            Toast.LENGTH_LONG).show();
+
+                    asyncGenerateLightMap(directions);
+                } else {
+                    Toast.makeText(getBaseContext(),
+                                   "No directions found. Try a street " +
+                                   "intersection along with your city name.",
+                                   Toast.LENGTH_LONG).show();
+                    finish();
+                }
             }
         }.execute(getIntent().getExtras());
     }
@@ -131,7 +153,15 @@ public class CrunchActivity extends Activity {
         new AsyncTask<Void, Integer, LightLine>() {
             @Override
             protected LightLine doInBackground(Void... params) {
-                return new LightLine(lightGrid, directions.polyline);
+                LightLine l = new LightLine(lightGrid, directions.polyline);
+                setProgressBar(100);
+                return l;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                super.onProgressUpdate(values);
+                setProgressBar(values[0]);
             }
 
             @Override
@@ -141,10 +171,6 @@ public class CrunchActivity extends Activity {
 
             @Override
             protected void onPostExecute(LightLine lightLine) {
-                /* Instead, push the other activity with the lightline
-                * serialized. Might as well serialize to JSON because
-                * GSON seems to be good at that. */
-                //renderOnMap(directions, lightGrid, lightLine);
                 pushMapActivity(directions.bounds, lightLine);
             }
         }.execute();

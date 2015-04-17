@@ -1,6 +1,5 @@
 package com.lunagameserve.get_shaded.directions;
 
-import android.util.Log;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.maps.android.PolyUtil;
@@ -19,11 +18,13 @@ import java.util.List;
  */
 public class Directions {
 
-    public JSONObject dirObj;
-
     public final LatLngBounds bounds;
 
+    public final List<List<LatLng>> polylines;
+
     public final List<LatLng> polyline;
+
+    private final boolean directionsFound;
 
     public Directions(LatLng origin, LatLng destination)
             throws IOException, JSONException {
@@ -33,10 +34,19 @@ public class Directions {
     public Directions(String origin, String destination)
             throws IOException, JSONException {
         String request = buildRequest(origin, destination);
-        dirObj = new JSONObject(IOUtil.webRequestContents(request));
+        JSONObject dirObj = new JSONObject(IOUtil.webRequestContents(request));
 
-        bounds = generateBounds();
-        polyline = generatePolylines();
+        if (dirObj.getJSONArray("routes").length() > 0) {
+            bounds = generateBounds(dirObj);
+            polylines = generatePolylines(dirObj);
+            polyline = polylines.get(0);
+            directionsFound = true;
+        } else {
+            bounds = null;
+            polyline = null;
+            polylines = null;
+            directionsFound = false;
+        }
     }
 
     public Directions(String origin, LatLng destination)
@@ -49,12 +59,18 @@ public class Directions {
         this(latLngString(origin), destination);
     }
 
-    private List<LatLng> generatePolylines() throws JSONException {
-        List<LatLng> pathPts = new ArrayList<LatLng>();
+    public boolean isDirectionsFound() {
+        return directionsFound;
+    }
+
+    private List<List<LatLng>> generatePolylines(JSONObject dirObj)
+            throws JSONException {
+
+        List<List<LatLng>> paths = new ArrayList<List<LatLng>>();
 
         JSONArray routes = dirObj.getJSONArray("routes");
-        Log.d("Directions", "Found " + routes.length() + " routes.");
         for (int i = 0; i < routes.length(); i++) {
+            List<LatLng> pathPts = new ArrayList<LatLng>();
             JSONArray legs = routes.getJSONObject(i).getJSONArray("legs");
             for (int j = 0; j < legs.length(); j++) {
                 JSONArray steps = legs.getJSONObject(j).getJSONArray("steps");
@@ -66,12 +82,14 @@ public class Directions {
                             polyline.getString("points")));
                 }
             }
+            paths.add(pathPts);
         }
 
-        return pathPts;
+        return paths;
     }
 
-    private LatLngBounds generateBounds() throws JSONException {
+    private LatLngBounds generateBounds(JSONObject dirObj)
+            throws JSONException {
         List<Double> lats = new ArrayList<Double>();
         List<Double> lngs = new ArrayList<Double>();
 

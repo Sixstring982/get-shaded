@@ -2,7 +2,8 @@
 <resources>
     <string name="app_name">get-shaded</string>
     <string name="destinationLabelText">Where are you walking to?</string>
-    <string name="startButtonText">Go!</string>
+    <string name="startButtonText">Calibrating…</string>
     <string name="destinationEditHint">Destination</string>
     <string name="appDisplayName">Get Shaded</string>
+    <string name="crunchDefaultText">Downloading Directions</string>
 </resources>

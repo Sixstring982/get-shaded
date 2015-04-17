@@ -1,4 +1,4 @@
-package com.lunagameserve.get_shaded;
+package com.lunagameserve.get_shaded.activitites;
 
 import android.app.Activity;
 import android.content.Context;
@@ -8,8 +8,10 @@ import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
 import com.google.android.gms.maps.model.LatLng;
+import com.lunagameserve.get_shaded.R;
 import org.json.JSONException;
 
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.util.concurrent.ExecutionException;
 
 public class MainMenuActivity extends Activity {
 
+    private int calibrationPointsLeft = 1;
     private LatLng currentLocation;
     private LocationManager locationManager;
 
@@ -40,7 +43,7 @@ public class MainMenuActivity extends Activity {
                    ExecutionException, InterruptedException {
         final EditText et = (EditText)findViewById(R.id.editText);
 
-        Intent intent = new Intent(this, MapActivity.class);
+        Intent intent = new Intent(this, CrunchActivity.class);
         intent.putExtra("latitude", currentLocation.latitude);
         intent.putExtra("longitude", currentLocation.longitude);
         intent.putExtra("destination", et.getText().toString());
@@ -57,10 +60,20 @@ public class MainMenuActivity extends Activity {
     private LocationListener locationListener = new LocationListener() {
         @Override
         public void onLocationChanged(Location location) {
-            currentLocation = new LatLng(location.getLatitude(),
-                    location.getLongitude());
+            Button goButton = (Button)findViewById(R.id.button);
+            if (calibrationPointsLeft > 1) {
+                calibrationPointsLeft--;
+                String ptsStr = "point" +
+                        ((calibrationPointsLeft == 1) ? "" : "s");
+                goButton.setText(calibrationPointsLeft +
+                        " calibration " + ptsStr + " left...");
+            } else {
+                currentLocation = new LatLng(location.getLatitude(),
+                        location.getLongitude());
 
-            findViewById(R.id.button).setEnabled(true);
+                goButton.setText("Go!");
+                goButton.setEnabled(true);
+            }
         }
 
         @Override

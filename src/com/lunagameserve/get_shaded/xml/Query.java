@@ -42,51 +42,45 @@ public class Query {
     }
 
     public List<Record> execute()
-            throws IOException, XmlPullParserException,
-                   InterruptedException, ExecutionException{
-        return
-        Executors.newFixedThreadPool(16).submit(new Callable<List<Record>>() {
-            @Override
-            public List<Record> call() throws Exception {
-                XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-                factory.setNamespaceAware(true);
-                XmlPullParser xpp = factory.newPullParser();
+            throws IOException, XmlPullParserException {
 
-                xpp.setInput(new InputStreamReader(new URL(queryString).openStream()));
-                int eventType = xpp.getEventType();
-                List<Record> records = new ArrayList<Record>();
-                while (eventType != XmlPullParser.END_DOCUMENT) {
-                    if (eventType == XmlPullParser.START_TAG &&
-                            xpp.getName().equals("datapoint")) {
-                        Map<String, String> attributes =
-                                new HashMap<String, String>();
-                        for (int i = 0; i < xpp.getAttributeCount(); i++) {
-                            attributes.put(xpp.getAttributeName(i),
-                                           xpp.getAttributeValue(i));
-                        }
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        XmlPullParser xpp = factory.newPullParser();
 
-                        Record r = new Record(
-                                attributes.get("owner"),
-                                parseLongOrZero(attributes.get("time")),
-                                parseDoubleOrZero(attributes.get("lon")),
-                                parseDoubleOrZero(attributes.get("lat")),
-                                parseDoubleOrZero(attributes.get("alt")),
-                                parseDoubleOrZero(attributes.get("accelx")),
-                                parseDoubleOrZero(attributes.get("accely")),
-                                parseDoubleOrZero(attributes.get("accelz")),
-                                parseDoubleOrZero(attributes.get("rotx")),
-                                parseDoubleOrZero(attributes.get("roty")),
-                                parseDoubleOrZero(attributes.get("rotz")),
-                                parseDoubleOrZero(attributes.get("light")),
-                                parseDoubleOrZero(attributes.get("press")));
-
-                        records.add(r);
-                    }
-                    eventType = xpp.next();
+        xpp.setInput(new InputStreamReader(new URL(queryString).openStream()));
+        int eventType = xpp.getEventType();
+        List<Record> records = new ArrayList<Record>();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_TAG &&
+                    xpp.getName().equals("datapoint")) {
+                Map<String, String> attributes =
+                        new HashMap<String, String>();
+                for (int i = 0; i < xpp.getAttributeCount(); i++) {
+                    attributes.put(xpp.getAttributeName(i),
+                            xpp.getAttributeValue(i));
                 }
-                return records;
+
+                Record r = new Record(
+                        attributes.get("owner"),
+                        parseLongOrZero(attributes.get("time")),
+                        parseDoubleOrZero(attributes.get("lon")),
+                        parseDoubleOrZero(attributes.get("lat")),
+                        parseDoubleOrZero(attributes.get("alt")),
+                        parseDoubleOrZero(attributes.get("accelx")),
+                        parseDoubleOrZero(attributes.get("accely")),
+                        parseDoubleOrZero(attributes.get("accelz")),
+                        parseDoubleOrZero(attributes.get("rotx")),
+                        parseDoubleOrZero(attributes.get("roty")),
+                        parseDoubleOrZero(attributes.get("rotz")),
+                        parseDoubleOrZero(attributes.get("light")),
+                        parseDoubleOrZero(attributes.get("press")));
+
+                records.add(r);
             }
-        }).get();
+            eventType = xpp.next();
+        }
+        return records;
     }
 
     private double parseDoubleOrZero(String in) {

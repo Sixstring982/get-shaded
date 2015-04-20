@@ -64,6 +64,16 @@ public class MapActivity extends Activity {
                         ((MapFragment) getFragmentManager()
                                 .findFragmentById(R.id.map))
                                 .getMap();
+
+                Bundle extras = getIntent().getExtras();
+
+                if (extras.getBoolean("renderPoints")) {
+                    /* TODO Parcelable the grid, render these */
+                }
+                if (extras.getBoolean("renderGrid")) {
+                    /* TODO After parceling do this too. */
+                }
+
                 lightLine.render(googleMap);
 
                 googleMap.setMyLocationEnabled(true);

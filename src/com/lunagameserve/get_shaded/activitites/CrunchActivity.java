@@ -13,6 +13,7 @@ import com.lunagameserve.get_shaded.R;
 import com.lunagameserve.get_shaded.directions.Directions;
 import com.lunagameserve.get_shaded.light.LightGrid;
 import com.lunagameserve.get_shaded.light.LightLine;
+import com.lunagameserve.get_shaded.settings.Settings;
 import com.lunagameserve.get_shaded.util.StringUtil;
 
 /**
@@ -61,6 +62,12 @@ public class CrunchActivity extends Activity {
         intent.putExtra("swlat", bounds.southwest.latitude);
         intent.putExtra("swlng", bounds.southwest.longitude);
         intent.putExtra("lightLine", lightLine);
+
+        /* Put settings */
+        Settings settings = new Settings(getFilesDir());
+        intent.putExtra("renderGrid", settings.isRenderGrid());
+        intent.putExtra("renderPoints", settings.isRenderPoints());
+
         startActivity(intent);
 
         finish();

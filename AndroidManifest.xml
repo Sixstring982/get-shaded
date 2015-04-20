@@ -15,8 +15,8 @@
         android:required="true"/>
 
     <application
-        android:label="@string/app_name"
-        android:icon="@drawable/ic_launcher"
+        android:label="@string/appDisplayName"
+        android:icon="@drawable/get_shaded_launcher"
         android:allowBackup="true">
 
         <meta-data
@@ -37,13 +37,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:label="@string/app_name"
+            android:label="@string/appDisplayName"
             android:name=".activitites.MapActivity">
 
         </activity>
         <activity
-                android:label="@string/app_name"
+                android:label="@string/appDisplayName"
                 android:name=".activitites.CrunchActivity">
+
+        </activity>
+        <activity
+                android:label="@string/appDisplayName"
+                android:name=".activitites.SettingsActivity">
 
         </activity>
     </application>

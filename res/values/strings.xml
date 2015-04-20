@@ -6,4 +6,7 @@
     <string name="destinationEditHint">Destination</string>
     <string name="appDisplayName">Get Shaded</string>
     <string name="crunchDefaultText">Downloading Directions</string>
+    <string name="mainMenuAboutItemText">About</string>
+    <string name="mainMenuSettingsItemText">Settings</string>
+    <string name="renderExtrasWarningText">These extra rendering options will decrease performance.</string>
 </resources>

@@ -7,6 +7,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,7 +40,7 @@ public class MainMenuActivity extends Activity {
                 LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
-    public void pushMapActivity(View view)
+    private void pushMapActivity(View view)
             throws IOException, JSONException,
                    ExecutionException, InterruptedException {
         final EditText et = (EditText)findViewById(R.id.editText);
@@ -50,11 +52,36 @@ public class MainMenuActivity extends Activity {
         startActivity(intent);
     }
 
+    private void pushSettingsActivity() {
+        Intent intent = new Intent(this, SettingsActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
         locationManager.removeUpdates(locationListener);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main_context_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.mainMenuAboutItem:
+                /* TODO Show about screen, talk about DG */
+                return true;
+            case R.id.mainMenuSettingsItem:
+                pushSettingsActivity();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     private LocationListener locationListener = new LocationListener() {

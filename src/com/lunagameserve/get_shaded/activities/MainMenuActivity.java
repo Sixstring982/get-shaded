@@ -1,4 +1,4 @@
-package com.lunagameserve.get_shaded.activitites;
+package com.lunagameserve.get_shaded.activities;
 
 import android.app.Activity;
 import android.content.Context;
@@ -14,10 +14,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import com.google.android.gms.maps.model.LatLng;
 import com.lunagameserve.get_shaded.R;
-import org.json.JSONException;
-
-import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
 public class MainMenuActivity extends Activity {
 
@@ -40,9 +36,7 @@ public class MainMenuActivity extends Activity {
                 LocationManager.NETWORK_PROVIDER, 0, 0, locationListener);
     }
 
-    private void pushMapActivity(View view)
-            throws IOException, JSONException,
-                   ExecutionException, InterruptedException {
+    public void pushMapActivity(View view) {
         final EditText et = (EditText)findViewById(R.id.editText);
 
         Intent intent = new Intent(this, CrunchActivity.class);

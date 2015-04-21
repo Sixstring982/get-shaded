@@ -1,4 +1,4 @@
-package com.lunagameserve.get_shaded.activitites;
+package com.lunagameserve.get_shaded.activities;
 
 import android.app.Activity;
 import android.os.Bundle;

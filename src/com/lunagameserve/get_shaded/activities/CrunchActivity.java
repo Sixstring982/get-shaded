@@ -1,4 +1,4 @@
-package com.lunagameserve.get_shaded.activitites;
+package com.lunagameserve.get_shaded.activities;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -15,6 +15,9 @@ import com.lunagameserve.get_shaded.light.LightGrid;
 import com.lunagameserve.get_shaded.light.LightLine;
 import com.lunagameserve.get_shaded.settings.Settings;
 import com.lunagameserve.get_shaded.util.StringUtil;
+
+import java.io.File;
+import java.io.IOException;
 
 /**
  * @author Sixstring982
@@ -52,21 +55,38 @@ public class CrunchActivity extends Activity {
         });
     }
 
-    private void pushMapActivity(LatLngBounds bounds, LightLine lightLine) {
+    private void pushMapActivity(LatLngBounds bounds,
+                                 LightGrid grid,
+                                 LightLine lightLine) {
         /* If more than one route was found, let's push a route
         *  selection activity.*/
 
-        Intent intent = new Intent(this, MapActivity.class);
-        intent.putExtra("nelat", bounds.northeast.latitude);
-        intent.putExtra("nelng", bounds.northeast.longitude);
-        intent.putExtra("swlat", bounds.southwest.latitude);
-        intent.putExtra("swlng", bounds.southwest.longitude);
-        intent.putExtra("lightLine", lightLine);
-
         /* Put settings */
         Settings settings = new Settings(getFilesDir());
-        intent.putExtra("renderGrid", settings.isRenderGrid());
-        intent.putExtra("renderPoints", settings.isRenderPoints());
+        Intent intent = new Intent(getBaseContext(), MapActivity.class);
+
+        intent.putExtra("grid",
+                settings.isRenderGrid());
+        intent.putExtra("points",
+                settings.isRenderPoints());
+
+        intent.putExtra("nelat",
+                bounds.northeast.latitude);
+        intent.putExtra("nelng",
+                bounds.northeast.longitude);
+        intent.putExtra("swlat",
+                bounds.southwest.latitude);
+        intent.putExtra("swlng",
+                bounds.southwest.longitude);
+        intent.putExtra("lightLine",
+                lightLine);
+
+        /* Write light grid to drive, will be read later */
+        try {
+            grid.write(new File(getFilesDir(), "lg.json"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         startActivity(intent);
 
@@ -178,7 +198,7 @@ public class CrunchActivity extends Activity {
 
             @Override
             protected void onPostExecute(LightLine lightLine) {
-                pushMapActivity(directions.bounds, lightLine);
+                pushMapActivity(directions.bounds, lightGrid, lightLine);
             }
         }.execute();
     }

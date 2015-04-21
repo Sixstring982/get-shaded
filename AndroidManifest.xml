@@ -28,7 +28,7 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/googleMapsAPIKey"/>
 
-        <activity android:name=".activitites.MainMenuActivity"
+        <activity android:name=".activities.MainMenuActivity"
             android:label="@string/app_name">
 
             <intent-filter>
@@ -38,17 +38,17 @@
         </activity>
         <activity
             android:label="@string/appDisplayName"
-            android:name=".activitites.MapActivity">
+            android:name=".activities.MapActivity">
 
         </activity>
         <activity
                 android:label="@string/appDisplayName"
-                android:name=".activitites.CrunchActivity">
+                android:name=".activities.CrunchActivity">
 
         </activity>
         <activity
                 android:label="@string/appDisplayName"
-                android:name=".activitites.SettingsActivity">
+                android:name=".activities.SettingsActivity">
 
         </activity>
     </application>

@@ -1,5 +1,7 @@
 package com.lunagameserve.get_shaded.light;
 
+import android.util.JsonReader;
+import android.util.JsonWriter;
 import android.util.Log;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.CircleOptions;
@@ -7,26 +9,31 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.PolygonOptions;
 import com.lunagameserve.get_shaded.color.ColorMap;
+import com.lunagameserve.get_shaded.json.JSONSerializable;
 import com.lunagameserve.get_shaded.util.MathUtil;
 import com.lunagameserve.get_shaded.xml.Filter;
 import com.lunagameserve.get_shaded.xml.Query;
 import com.lunagameserve.get_shaded.xml.Record;
+import org.json.JSONException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
 /**
  * @author Sixstring982
  * @since 4/12/2015
  */
-public class LightGrid {
+public class LightGrid extends JSONSerializable {
     public final double[][] lightData;
 
     private static int X_CELLS = 25;
     private static int Y_CELLS = 25;
 
-    private final double height;
-    private final double width;
     private final double dx;
     private final double dy;
 
@@ -66,9 +73,9 @@ public class LightGrid {
         maxLng = Math.max(bounds.northeast.longitude,
                 bounds.southwest.longitude);
 
-        height = Math.abs(bounds.northeast.latitude -
+        double height = Math.abs(bounds.northeast.latitude -
                 bounds.southwest.latitude);
-        width = Math.abs(bounds.northeast.longitude -
+        double width = Math.abs(bounds.northeast.longitude -
                 bounds.southwest.longitude);
 
         dx = width / X_CELLS;
@@ -328,5 +335,223 @@ public class LightGrid {
             }
         }
         return -1.0;
+    }
+
+    private LightGrid(double[][] lightData, double dx, double dy,
+                      LatLngBounds bounds, double minBin, double maxBin,
+                      double minLat, double minLng, double maxLat,
+                      double maxLng, List<Record> records) {
+        this.lightData = lightData;
+        this.dx = dx;
+        this.dy = dy;
+        this.bounds = bounds;
+        this.minBin = minBin;
+        this.maxBin = maxBin;
+        this.minLat = minLat;
+        this.minLng = minLng;
+        this.maxLat = maxLat;
+        this.maxLng = maxLng;
+        this.records = records;
+    }
+
+    public static LightGrid read(File file) throws IOException, JSONException {
+        FileInputStream in = new FileInputStream(file);
+        GZIPInputStream gz = new GZIPInputStream(in);
+        InputStreamReader r = new InputStreamReader(gz);
+        JsonReader reader = new JsonReader(r);
+
+        LightGrid grid = readJson(reader);
+
+        r.close();
+
+        return grid;
+    }
+
+    public static LightGrid readJson(JsonReader reader) throws IOException {
+        double[][] lightData = null;
+        double dx = 0;
+        double dy = 0;
+        double swlat = 0;
+        double swlng = 0;
+        double nelat = 0;
+        double nelng = 0;
+        double minbin = 0;
+        double maxbin = 0;
+        double minlat = 0;
+        double minlng = 0;
+        double maxlat = 0;
+        double maxlng = 0;
+        List<Record> records = new ArrayList<Record>();
+        reader.beginObject();
+        {
+            while(reader.hasNext()) {
+                String name = reader.nextName();
+                if (name.equals("lightData")) {
+                    reader.beginArray();
+                    {
+                        lightData = new double[X_CELLS][];
+                        for (int x = 0; x < X_CELLS; x++) {
+                            lightData[x] = new double[Y_CELLS];
+                            for (int y = 0; y < Y_CELLS; y++) {
+                                lightData[x][y] = reader.nextDouble();
+                            }
+                        }
+                    }
+                    reader.endArray();
+                } else if (name.equals("dx")) {
+                    dx = reader.nextDouble();
+                } else if (name.equals("dy")) {
+                    dy = reader.nextDouble();
+                } else if(name.equals("swlat")) {
+                    swlat = reader.nextDouble();
+                } else if(name.equals("swlng")) {
+                    swlng = reader.nextDouble();
+                } else if(name.equals("nelat")) {
+                    nelat = reader.nextDouble();
+                } else if(name.equals("nelng")) {
+                    nelng = reader.nextDouble();
+                } else if(name.equals("minbin")) {
+                    minbin = reader.nextDouble();
+                } else if(name.equals("maxbin")) {
+                    maxbin = reader.nextDouble();
+                } else if(name.equals("minLat")) {
+                    minlat = reader.nextDouble();
+                } else if(name.equals("minLng")) {
+                    minlng = reader.nextDouble();
+                } else if(name.equals("maxLat")) {
+                    maxlat = reader.nextDouble();
+                } else if(name.equals("maxLng")) {
+                    maxlng = reader.nextDouble();
+                } else if(name.equals("records")) {
+                    reader.beginArray();
+                    {
+                        while (reader.hasNext()) {
+                            reader.beginObject();
+                            {
+                                String owner = "";
+                                long time = 0;
+                                double lng = 0;
+                                double lat = 0;
+                                double alt = 0;
+                                double xaccel = 0;
+                                double yaccel = 0;
+                                double zaccel = 0;
+                                double xRot = 0;
+                                double yRot = 0;
+                                double zRot = 0;
+                                double light = 0;
+                                double pressure = 0;
+                                while (reader.hasNext()) {
+                                    String rname = reader.nextName();
+                                    if (rname.equals("owner")) {
+                                        owner = reader.nextString();
+                                    } else if (rname.equals("time")) {
+                                        time = reader.nextLong();
+                                    } else if (rname.equals("lng")) {
+                                        lng = reader.nextDouble();
+                                    } else if (rname.equals("lat")) {
+                                        lat = reader.nextDouble();
+                                    }  else if (rname.equals("alt")) {
+                                        alt = reader.nextDouble();
+                                    } else if (rname.equals("xaccel")) {
+                                        xaccel = reader.nextDouble();
+                                    } else if (rname.equals("yaccel")) {
+                                        yaccel = reader.nextDouble();
+                                    } else if (rname.equals("zaccel")) {
+                                        zaccel = reader.nextDouble();
+                                    } else if (rname.equals("xRot")) {
+                                        xRot = reader.nextDouble();
+                                    } else if (rname.equals("yRot")) {
+                                        yRot = reader.nextDouble();
+                                    } else if (rname.equals("zRot")) {
+                                        zRot = reader.nextDouble();
+                                    } else if (rname.equals("light")) {
+                                        light = reader.nextDouble();
+                                    } else if (rname.equals("pressure")) {
+                                        pressure = reader.nextDouble();
+                                    }
+                                }
+
+                                records.add(new Record(
+                                        owner, time, lng, lat, alt, xaccel,
+                                        yaccel, zaccel, xRot, yRot, zRot,
+                                        light, pressure
+                                ));
+                            }
+                            reader.endObject();
+                        }
+                    }
+                    reader.endArray();
+                }
+                else {
+                    Log.d("LightGridRead", "Unknown value for <" + name + ">");
+                    reader.skipValue();
+                }
+            }
+        }
+        reader.endObject();
+
+        return new LightGrid(lightData, dx, dy, new LatLngBounds(
+                new LatLng(swlat, swlng), new LatLng(nelat, nelng)
+        ), minbin, maxbin, minlat, minlng, maxlat, maxlng, records);
+    }
+
+    @Override
+    public void writeJson(JsonWriter writer) throws IOException {
+        writer.beginObject();
+        {
+            writer.name("lightData");
+            writer.beginArray();
+            {
+                for (double[] aLightData : lightData) {
+                    for (double anALightData : aLightData) {
+                        writer.value(anALightData);
+                    }
+                }
+            }
+            writer.endArray();
+
+            writer.name("dx").value(dx);
+            writer.name("dy").value(dy);
+
+            writer.name("swlat").value(bounds.southwest.latitude);
+            writer.name("swlng").value(bounds.southwest.longitude);
+            writer.name("nelat").value(bounds.northeast.latitude);
+            writer.name("nelng").value(bounds.northeast.longitude);
+
+            writer.name("minbin").value(minBin);
+            writer.name("maxbin").value(maxBin);
+
+            writer.name("minLat").value(minLat);
+            writer.name("maxLat").value(maxLat);
+            writer.name("minLng").value(minLng);
+            writer.name("maxLng").value(maxLng);
+
+            writer.name("records");
+            writer.beginArray();
+            {
+                for(Record r : records) {
+                    writer.beginObject();
+                    {
+                        writer.name("owner").value(r.owner);
+                        writer.name("time").value(r.time);
+                        writer.name("lng").value(r.longitude);
+                        writer.name("lat").value(r.latitude);
+                        writer.name("alt").value(r.altitude);
+                        writer.name("xaccel").value(r.xAccel);
+                        writer.name("yaccel").value(r.yAccel);
+                        writer.name("zaccel").value(r.zAccel);
+                        writer.name("xRot").value(r.xRot);
+                        writer.name("yRot").value(r.yRot);
+                        writer.name("zRot").value(r.zRot);
+                        writer.name("light").value(r.light);
+                        writer.name("pressure").value(r.pressure);
+                    }
+                    writer.endObject();
+                }
+            }
+            writer.endArray();
+        }
+        writer.endObject();
     }
 }

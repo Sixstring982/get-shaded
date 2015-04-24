@@ -82,6 +82,30 @@ public class LightLine implements Parcelable {
         }
     }
 
+    public boolean mostLightMissing() {
+        double litDist = 0.0;
+        double totalDist = 0.0;
+
+        for (PolylineOptions p : getPolyLines()) {
+            for (int i = 0; i < p.getPoints().size() - 1; i++) {
+                LatLng s = p.getPoints().get(i);
+                LatLng e = p.getPoints().get(i + 1);
+
+                double dist = Math.sqrt((s.latitude - e.latitude) *
+                                        (s.latitude - e.latitude) +
+                                        (s.longitude - e.longitude) *
+                                        (s.longitude - e.longitude));
+
+                totalDist += dist;
+                if (p.getColor() != 0xff7f7f7f) {
+                    litDist += dist;
+                }
+            }
+        }
+
+        return litDist < (totalDist / 2.0);
+    }
+
     private List<PolylineOptions> generatePolyLines() {
         List<PolylineOptions> acc = new ArrayList<PolylineOptions>();
 
@@ -120,16 +144,6 @@ public class LightLine implements Parcelable {
         }
 
         return acc;
-    }
-
-    public void renderGridIntersections(GoogleMap map) {
-        for (LatLng i : generatedIntersections) {
-            CircleOptions cops = new CircleOptions();
-            cops.center(i);
-            cops.radius(1.0);
-            cops.fillColor(0xff000000);
-            map.addCircle(cops);
-        }
     }
 
     public void render(GoogleMap map) {

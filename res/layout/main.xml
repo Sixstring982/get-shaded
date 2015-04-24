@@ -20,7 +20,8 @@
         android:id="@+id/editText"
         android:layout_below="@+id/destinationLabel"
         android:layout_centerHorizontal="true"
-        android:hint="@string/destinationEditHint" />
+        android:hint="@string/destinationEditHint"
+        android:background="#ff1c1c1c" />
     <Button
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

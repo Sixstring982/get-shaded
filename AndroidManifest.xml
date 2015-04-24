@@ -26,7 +26,7 @@
         <!-- Put your own api key in res/values/keys.xml -->
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="@string/googleMapsAPIKey"/>
+            android:value="@string/googleMapsAPIKeyRelease"/>
 
         <activity android:name=".activities.MainMenuActivity"
             android:label="@string/app_name">
@@ -49,6 +49,11 @@
         <activity
                 android:label="@string/appDisplayName"
                 android:name=".activities.SettingsActivity">
+
+        </activity>
+        <activity
+            android:label="@string/appDisplayName"
+            android:name=".activities.AboutActivity">
 
         </activity>
     </application>

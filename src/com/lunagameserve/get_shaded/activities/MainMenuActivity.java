@@ -51,6 +51,11 @@ public class MainMenuActivity extends Activity {
         startActivity(intent);
     }
 
+    private void pushAboutActivity() {
+        Intent intent = new Intent(this, AboutActivity.class);
+        startActivity(intent);
+    }
+
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -68,7 +73,7 @@ public class MainMenuActivity extends Activity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.mainMenuAboutItem:
-                /* TODO Show about screen, talk about DG */
+                pushAboutActivity();
                 return true;
             case R.id.mainMenuSettingsItem:
                 pushSettingsActivity();

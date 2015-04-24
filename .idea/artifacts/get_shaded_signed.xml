@@ -1,0 +1,22 @@
+<component name="ArtifactManager">
+  <artifact type="apk" name="get-shaded-signed">
+    <output-path>$PROJECT_DIR$/out/artifacts/get_shaded_signed</output-path>
+    <properties id="android-properties">
+      <options>
+        <option name="keyAlias" value="get-shaded" />
+        <option name="keyPassword" value="MHgyZSE9OHUzTjA=" />
+        <option name="keyStorePassword" value="MHgyZSE9OHUzTjA=" />
+        <option name="keyStoreUrl" value="file://$PROJECT_DIR$/../keystore/keystore.jks" />
+        <option name="proGuardCfgFiles">
+          <list>
+            <option value="file://C:/Program Files/Java/jdk1.8.0_25/tools/proguard/proguard-android.txt" />
+          </list>
+        </option>
+        <option name="signingMode" value="RELEASE_SIGNED" />
+      </options>
+    </properties>
+    <root id="archive" name="get-shaded-signed.apk">
+      <element id="android-final-package" facet="get-shaded/android/Android" />
+    </root>
+  </artifact>
+</component>

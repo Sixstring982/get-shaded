@@ -2,6 +2,7 @@ package com.lunagameserve.get_shaded.activities;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.widget.Toast;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
@@ -25,8 +26,12 @@ public class MapActivity extends Activity {
 
     private LightLine lightLine;
 
+    private LightGrid grid = null;
+
     private boolean renderGrid;
     private boolean renderPoints;
+
+    private GoogleMap map;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -57,11 +62,11 @@ public class MapActivity extends Activity {
     private void initializeMap() {
         if (!mapInitialized) {
             mapInitialized = true;
-            GoogleMap googleMap =
+            this.map =
                     ((MapFragment) getFragmentManager()
                             .findFragmentById(R.id.map)).getMap();
 
-            googleMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+            this.map.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
                 @Override
                 public void onMapLoaded() {
                     renderOnMap();
@@ -70,51 +75,81 @@ public class MapActivity extends Activity {
         }
     }
 
-    private void renderOnMap() {
+    private void zoomToBounds() {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                GoogleMap googleMap =
-                        ((MapFragment) getFragmentManager()
-                                .findFragmentById(R.id.map))
-                                .getMap();
+                map.setMyLocationEnabled(true);
 
-                LightGrid grid = null;
+                map.animateCamera(
+                        CameraUpdateFactory.newLatLngBounds(bounds, 32));
 
+                renderPoints();
+            }
+        });
+    }
 
+    private void renderPoints() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 if (renderPoints) {
                     try {
                         grid = LightGrid.read(
                                 new File(getFilesDir(), "lg.json"));
-                        grid.renderRecords(googleMap);
+                        grid.renderRecords(map);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
+                renderGrid();
+            }
+        });
+    }
+
+    private void renderGrid() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
                 if (renderGrid) {
                     try {
                         if (grid == null) {
                             grid = LightGrid.read(
                                     new File(getFilesDir(), "lg.json"));
                         }
-                        grid.renderPolygons(googleMap);
+                        grid.renderPolygons(map);
                     } catch (IOException e) {
                         e.printStackTrace();
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
                 }
-
-
-                lightLine.render(googleMap);
-
-                googleMap.setMyLocationEnabled(true);
-
-                googleMap.animateCamera(
-                        CameraUpdateFactory.newLatLngBounds(bounds, 32));
+                renderLightLine();
             }
         });
+    }
+
+    private void renderLightLine() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (lightLine.mostLightMissing()) {
+                    Toast.makeText(getBaseContext(),
+                            "This route is missing data. Consider using " +
+                                    "DataGather to help us compute its " +
+                                    "shadiness in the future.", Toast
+                                    .LENGTH_LONG).show();
+                }
+
+
+                lightLine.render(map);
+            }
+        });
+    }
+
+    private void renderOnMap() {
+        zoomToBounds();
     }
 }

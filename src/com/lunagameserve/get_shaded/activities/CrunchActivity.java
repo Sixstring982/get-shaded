@@ -111,6 +111,7 @@ public class CrunchActivity extends Activity {
                     setProgress(33);
                     return dirs;
                 } catch (Exception e) {
+                    e.printStackTrace();
                     return null;
                 }
             }
@@ -123,7 +124,14 @@ public class CrunchActivity extends Activity {
 
             @Override
             protected void onPostExecute(Directions directions) {
-                if (directions.isDirectionsFound()) {
+                if (directions == null || !directions.isDirectionsFound()) {
+                    Toast.makeText(getBaseContext(),
+                            "No directions found. Make sure you're " +
+                                    "connected to the internet, then try a " +
+                                    "street intersection along with your city name.",
+                            Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
                     Toast.makeText(
                             getBaseContext(),
                             StringUtil.pluralize("route",
@@ -132,12 +140,6 @@ public class CrunchActivity extends Activity {
                             Toast.LENGTH_LONG).show();
 
                     asyncGenerateLightMap(directions);
-                } else {
-                    Toast.makeText(getBaseContext(),
-                                   "No directions found. Try a street " +
-                                   "intersection along with your city name.",
-                                   Toast.LENGTH_LONG).show();
-                    finish();
                 }
             }
         }.execute(getIntent().getExtras());

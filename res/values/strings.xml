@@ -9,4 +9,5 @@
     <string name="mainMenuAboutItemText">About</string>
     <string name="mainMenuSettingsItemText">Settings</string>
     <string name="renderExtrasWarningText">These extra rendering options will decrease performance.</string>
+    <string name="app_version">v1.0</string>
 </resources>
